@@ -1,19 +1,19 @@
 import os
 
-def renomear_fotos(caminho_da_pasta):
+def renamePictures(folder_path):
     """
     Renomeia todos os arquivos em uma pasta sequencialmente como Imagem01, Imagem02, etc.
 
     :param caminho_da_pasta: O caminho para a pasta que contém as imagens.
     """
     # Verifica se o caminho da pasta existe
-    if not os.path.isdir(caminho_da_pasta):
-        print(f"Erro: A pasta '{caminho_da_pasta}' não foi encontrada.")
+    if not os.path.isdir(folder_path):
+        print(f"Erro: A pasta '{folder_path}' não foi encontrada.")
         return
 
     # Lista todos os arquivos na pasta
     try:
-        arquivos = os.listdir(caminho_da_pasta)
+        arquivos = os.listdir(folder_path)
     except OSError as e:
         print(f"Erro ao acessar a pasta: {e}")
         return
@@ -34,8 +34,8 @@ def renomear_fotos(caminho_da_pasta):
         novo_nome = f"Imagem{contador:02d}{extensao}"
 
         # Monta o caminho completo para o arquivo antigo e o novo
-        caminho_antigo = os.path.join(caminho_da_pasta, nome_antigo)
-        caminho_novo = os.path.join(caminho_da_pasta, novo_nome)
+        caminho_antigo = os.path.join(folder_path, nome_antigo)
+        caminho_novo = os.path.join(folder_path, novo_nome)
 
         # Renomeia o arquivo
         try:
@@ -52,4 +52,4 @@ if __name__ == "__main__":
     # Exemplo para macOS/Linux: "/home/SeuUsuario/Imagens/Viagem"
     pasta_de_fotos = "/home/gustavo/Projects/trabalhoaps/dados/chave_inglesa"
 
-    renomear_fotos(pasta_de_fotos)
+    renamePictures(pasta_de_fotos)

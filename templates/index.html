@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção de Objetos - Atividades Práticas Supervisionadas</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Detecção de Objetos</h1>
+            <p>Faça upload de uma ou mais imagens para análise com IA</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📤</div>
+                <h2>Arraste suas imagens aqui</h2>
+                <p>ou clique para selecionar</p>
+                <input type="file" id="fileInput" multiple accept="image/*" hidden>
+                <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                    Selecionar Imagens
+                </button>
+            </div>
+
+            <div class="preview-container" id="previewContainer" style="display: none;">
+                <h3>📋 Imagens Selecionadas (<span id="fileCount">0</span>)</h3>
+                <div class="preview-grid" id="previewGrid"></div>
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="enviarImagens()">
+                        🚀 Processar Imagens
+                    </button>
+                    <button class="btn-secondary" onclick="limparSelecao()">
+                        🗑️ Limpar Seleção
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Processando imagens com IA... Aguarde</p>
+                <p id="progressText">0/0 imagens processadas</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/javascript/index.js"></script>
+</body>
+
+</html>

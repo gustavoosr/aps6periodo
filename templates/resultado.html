@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Análise</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Resultados da Análise</h1>
+            <button class="btn-secondary" onclick="window.location.href='/'">
+                ← Nova Análise
+            </button>
+        </header>
+
+        <main id="resultadosContainer">
+            <!-- Resultados serão injetados via JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        // Receber dados da página anterior
+        const resultados = JSON.parse(sessionStorage.getItem('resultados'));
+
+        if (!resultados) {
+            window.location.href = '/';
+        }
+
+        const container = document.getElementById('resultadosContainer');
+
+        resultados.forEach((resultado, index) => {
+            const card = document.createElement('div');
+            card.className = 'resultado-card';
+
+            if (resultado.sucesso) {
+                const alertas = resultado.dados_json?.alertas_seguranca;
+                const temAlertas = alertas && alertas.criticos > 0;
+
+                card.innerHTML = `
+                    <div class="resultado-header ${temAlertas ? 'alerta' : ''}">
+                        <h2>📸 ${resultado.imagem_original}</h2>
+                        ${temAlertas ? '<span class="badge-alerta">⚠️ Alertas de Segurança</span>' : ''}
+                    </div>
+                    
+                    <div class="resultado-content">
+                        <!-- Comparação de Imagens -->
+                        <div class="imagens-comparacao">
+                            <div class="imagem-box">
+                                <h4>🖼️ Imagem Original</h4>
+                                <img src="/uploads/${resultado.imagem_original}" alt="Original" onerror="this.src='/static/images/no-image.png'">
+                            </div>
+                            <div class="imagem-box destaque">
+                                <h4>✨ Objetos Detectados (${resultado.total_objetos})</h4>
+                                <img src="/uploads/${resultado.imagem_resultado}" alt="Com Detecções" onerror="this.src='/static/images/no-image.png'">
+                            </div>
+                        </div>
+                        
+                        <div class="analise-ia">
+                            <h3>🤖 Análise da IA</h3>
+                            <p>${resultado.mensagem_ia}</p>
+                        </div>
+                        
+                        ${temAlertas ? `
+                        <div class="alertas-box">
+                            <h4>⚠️ Alertas Críticos de Segurança</h4>
+                            <ul>
+                                ${alertas.detalhes.map(d => `<li>${d}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="estatisticas">
+                            <div class="stat-card">
+                                <div class="stat-numero">${resultado.dados_json?.total_objetos || 0}</div>
+                                <div class="stat-label">Objetos Detectados</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-numero">${resultado.dados_json?.confianca_media_percentual || 0}%</div>
+                                <div class="stat-label">Confiança Média</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-numero">${resultado.tempo_ms}ms</div>
+                                <div class="stat-label">Tempo de Análise</div>
+                            </div>
+                        </div>
+                        
+                        <details class="json-details">
+                            <summary>📄 Ver JSON Completo</summary>
+                            <pre>${JSON.stringify(resultado.dados_json, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="resultado-header erro">
+                        <h2>❌ ${resultado.imagem_original}</h2>
+                    </div>
+                    <div class="resultado-content">
+                        <p class="erro-msg">Erro: ${resultado.erro}</p>
+                    </div>
+                `;
+            }
+
+            container.appendChild(card);
+        });
+    </script>
+
+    <!-- Script para visualizar imagens em tela cheia -->
+    <script src="/static/javascript/imageViewer.js"></script>
+</body>
+
+</html>
