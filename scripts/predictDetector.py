@@ -10,30 +10,19 @@ from dotenv import load_dotenv
 # Carrega variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# ===================================================================
-# CONFIGURAÇÕES DE DETECÇÃO
-# ===================================================================
 
 # Confiança mínima para detecção (0-100)
-# Valores recomendados:
-#   30-40: Detecta mais objetos (pode ter falsos positivos)
-#   50-60: BALANCEADO - Recomendado para uso geral ✅
-#   70-80: Rigoroso (apenas detecções com alta certeza)
-#   85-95: Muito rigoroso (pode perder alguns objetos verdadeiros)
-CONFIDENCE_THRESHOLD = 60  # 60% de confiança mínima (recomendado)
+CONFIDENCE_THRESHOLD = 60  # 60% de confiança mínima.
 
 # Sobreposição máxima para NMS - Non-Maximum Suppression (0-100)
 # Controla quantas detecções sobrepostas são eliminadas
-#   10-20: Muito restritivo (elimina muitas detecções próximas)
-#   30-40: BALANCEADO - Recomendado ✅
-#   50-60: Permissivo (mantém detecções sobrepostas)
-OVERLAP_THRESHOLD = 30  # 30% de sobreposição permitida
+OVERLAP_THRESHOLD = 30  # 30% de sobreposição permitida.
 
 # Configuração global do modelo
 model = None
 
 def loadModel():
-    """Carrega o modelo do Roboflow de forma segura, lendo as configurações do ambiente."""
+    """Carrega o modelo do Roboflow, lendo as configurações do ambiente."""
     global model
     if model is None:
         try:
@@ -77,7 +66,7 @@ def preProcessImage(image_path):
         # Guarda a imagem original para desenhar as detecções depois
         imagem_original = image.copy()
         
-        # Aplica o pré-processamento avançado do preProcessingImages.py
+        # Aplica o pré-processamento do preProcessingImages.py
 
         # Isso inclui: redimensionamento, equalização de histograma, redução de ruído e normalização
         print(f"Aplicando pré-processamento avançado na imagem...")
@@ -96,17 +85,10 @@ def preProcessImage(image_path):
         raise
 
 def drawDetections(imagem, predictions, scale_x=1.0, scale_y=1.0):
-    """
-    Desenha as detecções na imagem com escala apropriada
+
+    #Desenha as detecções na imagem com escala apropriada
     
-    Args:
-        imagem: Imagem onde desenhar
-        predictions: Lista de predições do modelo
-        scale_x: Fator de escala horizontal (tamanho_original / 640)
-        scale_y: Fator de escala vertical (tamanho_original / 640)
-    """
     try:
-        print(f"🎨 Desenhando {len(predictions)} detecções (escala: {scale_x:.2f}x{scale_y:.2f})")
         
         for i, pred in enumerate(predictions):
             # Coordenadas do Roboflow são: centro (x, y) + width/height
@@ -186,12 +168,13 @@ def processSingleImage(image_path):
         scale_x = img_original_width / 640.0
         scale_y = img_original_height / 640.0
         
+        """
         print(f"📏 Tamanho original: {img_original_width}x{img_original_height}")
         print(f"📏 Tamanho processado: 640x640")
         print(f"📏 Fator de escala: {scale_x:.2f}x{scale_y:.2f}")
         print(f"⚙️ Confiança mínima: {CONFIDENCE_THRESHOLD}%")
         print(f"Enviando imagem para predição: {os.path.basename(image_path)}")
-        
+        """
         # Faz a predição usando os thresholds configurados
         prediction = model.predict(
             temp_path, 
@@ -348,6 +331,7 @@ def processImages(list_paths):
     print(f"\n Processamento concluído!\n")
     return resultados
 
+"""
 # Para testar localmente (sem Flask)
 if __name__ == "__main__":
     # Teste básico do modelo
@@ -377,3 +361,4 @@ if __name__ == "__main__":
                     print(json.dumps(resultado['dados_json'], indent=2, ensure_ascii=False))
             else:
                 print(f"Erro: {resultado['erro']}")
+"""

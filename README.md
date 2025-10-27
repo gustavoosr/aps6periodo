@@ -211,25 +211,12 @@ O sistema aplica um pipeline completo de pré-processamento:
 - Mudança de brilho/contraste
 - Blur adicional
 
-📖 **Documentação completa:** [TECNICAS_PRE_PROCESSAMENTO.md](TECNICAS_PRE_PROCESSAMENTO.md)
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 👥 Autores
 
 **Atividade Prática Supervisionada APS - 6º Período**
 
 - Gustavo dos Santos R. Silva
-
-## 🙏 Agradecimentos
-
-- [Ultralytics YOLO](https://github.com/ultralytics/ultralytics)
-- [Roboflow](https://roboflow.com/)
-- [Google Gemini AI](https://ai.google.dev/)
-- [Flask](https://flask.palletsprojects.com/)
----
 
 ⭐ Se este projeto foi útil para você, considere dar uma estrela!
 

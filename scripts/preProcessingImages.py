@@ -8,7 +8,7 @@ from albumentations import (
 
 """
 PIPELINE DE PRÉ-PROCESSAMENTO DE IMAGENS
-Baseado nos conceitos de Visão Computacional e Processamento de Imagens
+Baseado nos conceitos de Visão Computacional e Processamento de Imagens.
 
 Referências das Aulas:
 - Aula 02: Processamento de Imagens e Visão Computacional
@@ -21,14 +21,17 @@ Referências das Aulas:
 """
 
 def preprocess_image(image, target_size=(640, 640), enhance_contrast=True, 
-                     denoise=True, normalize=True, blur_method='gaussian'):
+                     denoise=True, normalize=True, blur_method='gaussian',
+                     apply_morphology=False, detect_edges=False, edge_method='canny',
+                     apply_segmentation=False, segmentation_method='threshold'):
     """
-    Função de pré-processamento de imagens para detecção de objetos.
+    Função UNIFICADA de pré-processamento de imagens para detecção de objetos.
     
-    Aplica técnicas fundamentais de processamento de imagens:
+    Aplica técnicas de processamento de imagens (fundamentais e avançadas):
     1. Aquisição (imagem de entrada)
     2. Pré-processamento (redimensionamento, equalização, suavização)
     3. Representação (normalização dos valores de pixels)
+    4. Técnicas avançadas opcionais (morfologia, detecção de bordas, segmentação)
     
     Args:
         image (numpy.ndarray): Imagem BGR (OpenCV format)
@@ -37,21 +40,28 @@ def preprocess_image(image, target_size=(640, 640), enhance_contrast=True,
         denoise (bool): Aplicar redução de ruído. Default: True
         normalize (bool): Normalizar valores de pixels [0-255]. Default: True
         blur_method (str): Método de suavização ('gaussian', 'median', 'bilateral', 'average'). Default: 'gaussian'
+        apply_morphology (bool): Aplicar operações morfológicas. Default: False
+        detect_edges (bool): Aplicar detecção de bordas. Default: False
+        edge_method (str): Método de detecção ('canny', 'sobel', 'laplacian'). Default: 'canny'
+        apply_segmentation (bool): Aplicar técnicas de segmentação. Default: False
+        segmentation_method (str): Método de segmentação ('threshold', 'otsu', 'adaptive'). Default: 'threshold'
     
     Returns:
         numpy.ndarray: Imagem pré-processada
     
-    Técnicas Aplicadas:
+    Técnicas Fundamentais:
         - Redimensionamento (Aula 04 - Transformações Geométricas)
-        - CLAHE - Equalização Adaptativa de Histograma (Aula 04)
+        - CLAHE - Equalização Adaptativa de Histograma
         - Suavização/Blurring (Aula 05 - Técnicas de Pré-Processamento)
         - Normalização (Aula 02 - Representação Digital)
+        - Operações Morfológicas (Aula 07)
+        - Detecção de Bordas (Aula 06)
+        - Segmentação de Imagens (Aula 08)
     """
     
-    # ===================================================================
     # ETAPA 1: REDIMENSIONAMENTO (Aula 04 - Transformações Geométricas)
-    # ===================================================================
-    # Redimensiona para tamanho padrão usando interpolação bilinear
+
+    
     # Facilita o processamento e padroniza entradas para o modelo
     image_resized = cv2.resize(image, target_size, interpolation=cv2.INTER_LINEAR)
     
@@ -133,35 +143,8 @@ def preprocess_image(image, target_size=(640, 640), enhance_contrast=True,
     # Garantir que o resultado é uint8 (0-255)
     image_final = image_normalized.astype(np.uint8)
     
-    return image_final
-
-
-def preprocess_image_advanced(image, target_size=(640, 640), apply_morphology=False, 
-                              detect_edges=False, edge_method='canny'):
-    """
-    Função AVANÇADA de pré-processamento com técnicas adicionais.
-    
-    Inclui técnicas mais sofisticadas como:
-    - Operações morfológicas (Aula 07)
-    - Detecção de bordas (Aula 06)
-    - Segmentação (Aula 08)
-    
-    Args:
-        image (numpy.ndarray): Imagem BGR
-        target_size (tuple): Tamanho alvo. Default: (640, 640)
-        apply_morphology (bool): Aplicar operações morfológicas. Default: False
-        detect_edges (bool): Aplicar detecção de bordas. Default: False
-        edge_method (str): Método de detecção ('canny', 'sobel', 'laplacian'). Default: 'canny'
-    
-    Returns:
-        numpy.ndarray: Imagem pré-processada avançada
-    """
-    
-    # Aplicar pré-processamento básico primeiro
-    image_processed = preprocess_image(image, target_size=target_size)
-    
     # ===================================================================
-    # OPERAÇÕES MORFOLÓGICAS (Aula 07)
+    # ETAPA 5: OPERAÇÕES MORFOLÓGICAS
     # ===================================================================
     if apply_morphology:
         # Criar elemento estruturante
@@ -169,18 +152,18 @@ def preprocess_image_advanced(image, target_size=(640, 640), apply_morphology=Fa
         
         # Abertura: remove pequenos objetos/ruídos
         # Erosão seguida de dilatação
-        image_processed = cv2.morphologyEx(image_processed, cv2.MORPH_OPEN, kernel)
+        image_final = cv2.morphologyEx(image_final, cv2.MORPH_OPEN, kernel)
         
         # Fechamento: preenche pequenos buracos
         # Dilatação seguida de erosão
-        image_processed = cv2.morphologyEx(image_processed, cv2.MORPH_CLOSE, kernel)
+        image_final = cv2.morphologyEx(image_final, cv2.MORPH_CLOSE, kernel)
     
     # ===================================================================
-    # DETECÇÃO DE BORDAS (Aula 06)
+    # ETAPA 6: DETECÇÃO DE BORDAS
     # ===================================================================
     if detect_edges:
         # Converter para escala de cinza para detecção de bordas
-        gray = cv2.cvtColor(image_processed, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(image_final, cv2.COLOR_BGR2GRAY)
         
         if edge_method == 'canny':
             # Detector de Bordas Canny
@@ -205,9 +188,46 @@ def preprocess_image_advanced(image, target_size=(640, 640), apply_morphology=Fa
         edges_bgr = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
         
         # Combinar imagem original com bordas detectadas
-        image_processed = cv2.addWeighted(image_processed, 0.7, edges_bgr, 0.3, 0)
+        image_final = cv2.addWeighted(image_final, 0.7, edges_bgr, 0.3, 0)
     
-    return image_processed
+    # ===================================================================
+    # ETAPA 7: SEGMENTAÇÃO DE IMAGENS
+    # ===================================================================
+    if apply_segmentation:
+        # Converter para escala de cinza para segmentação
+        gray = cv2.cvtColor(image_final, cv2.COLOR_BGR2GRAY)
+        
+        if segmentation_method == 'threshold':
+            # Binarização Simples (Aula 06 - Binarização)
+            # Separa objetos do fundo usando um limiar fixo
+            _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+            segmented = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+            
+        elif segmentation_method == 'otsu':
+            # Método de Otsu (Aula 08 - Segmentação Automática)
+            # Calcula automaticamente o melhor limiar de binarização
+            # Maximiza a variância entre classes (fundo e objetos)
+            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            segmented = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+            
+        elif segmentation_method == 'adaptive':
+            # Binarização Adaptativa (Aula 08)
+            # Calcula limiar para cada região da imagem
+            # Útil para imagens com iluminação não-uniforme
+            binary = cv2.adaptiveThreshold(
+                gray, 255, 
+                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # Média ponderada gaussiana
+                cv2.THRESH_BINARY, 
+                11,  # Tamanho da vizinhança
+                2    # Constante subtraída da média
+            )
+            segmented = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+        
+        # Combinar imagem original com segmentação
+        # Preserva informação da imagem original com realce da segmentação
+        image_final = cv2.addWeighted(image_final, 0.6, segmented, 0.4, 0)
+    
+    return image_final
 
 
 # Executa o processamento em lote apenas quando o script for executado diretamente
