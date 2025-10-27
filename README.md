@@ -186,8 +186,6 @@ Servir imagens processadas
 
 > **📝 Nota:** O modelo YOLO recebe a imagem **pré-processada** (melhor precisão), mas o usuário vê a imagem **original** com as detecções desenhadas (melhor qualidade visual).
 
-📖 **Veja o fluxo completo em:** [FLUXO_PROCESSAMENTO.md](FLUXO_PROCESSAMENTO.md)
-
 ## 📊 Pré-processamento de Imagens
 
 ### Técnicas Implementadas (Baseado nas Aulas de Visão Computacional)
