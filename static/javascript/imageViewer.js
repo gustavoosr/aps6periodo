@@ -210,7 +210,7 @@ function attachImageListeners() {
             });
         });
 
-        console.log(`✅ Visualizador de imagens ativado (${imagens.length} imagens)`);
+        //console.log(`✅ Visualizador de imagens ativado (${imagens.length} imagens)`);
     }, 500); // Pequeno delay para garantir que as imagens foram carregadas
 }
 

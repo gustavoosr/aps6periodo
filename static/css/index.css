@@ -50,6 +50,42 @@ header p {
     font-size: 1.1rem;
 }
 
+/* Info & Warning Boxes */
+.info-box, .warning-box {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 0 auto 1.5rem auto;
+    max-width: 900px;
+    box-shadow: var(--shadow);
+}
+
+.info-box {
+    border-left: 5px solid var(--primary);
+}
+
+.info-box h4 {
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.object-list {
+    columns: 3;
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.object-list li {
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.warning-box {
+    background: #fffbeb;
+    border-left: 5px solid var(--warning);
+    color: #b45309;
+}
+
 /* Upload Area */
 .upload-area {
     background: var(--card-bg);
@@ -498,5 +534,9 @@ header p {
     
     .imagem-box h4 {
         font-size: 0.9rem;
+    }
+
+    .object-list {
+        columns: 2;
     }
 }
